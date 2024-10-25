@@ -23,10 +23,10 @@ export const sendAction = () => {
 }
 
 // 相手がルームを作成した
-// socket.on('roomCreated', (roomId, boardKind) => {
-//   const CSVData = createBoard(boardKind);
-
-// });
+socket.on('roomCreated', (roomId, boardKind) => {
+  const CSVData = createBoard(boardKind);
+  
+});
 
 socket.on('ActionAgent', (ActionData) => {
   

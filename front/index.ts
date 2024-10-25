@@ -2,7 +2,7 @@ import * as Board from './board';
 import { Input  } from './input';
 import { Mode, Direction, ActionData } from './common';
 import { fetchCSV, sendAction, notifyRoom} from './api';
-import { setActionList, setReadyButton } from './navigator';
+import { clearActionList, setActionList, setReadyButton, unsetReadyButton } from './navigator';
 
 export let board: Board.Board = new Board.Board;
 export let input: Input = new Input();
@@ -120,6 +120,9 @@ const synchronizeAgent = () => {
   sendAction(input.act);
 
   board.setCursor(0);
+  input.act = [];
+  clearActionList();
+  unsetReadyButton();
   board.createBoard();
 }
 

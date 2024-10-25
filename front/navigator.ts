@@ -1,6 +1,15 @@
+import { input } from '.';
 import { Direction, Mode } from './common'
 import { ActionData } from './common';
 import { Input } from './input';
+
+export const clearActionList = () => {
+  const actionList = document.getElementById('actionList');
+  if (!actionList) {
+    return;
+  }
+  actionList.innerHTML = '';
+}
 
 export const setActionList = (actionData: ActionData) => {
   const actionList = document.getElementById('actionList');
@@ -46,6 +55,15 @@ export const setActionList = (actionData: ActionData) => {
   }
 
   actionList.appendChild(action);
+}
+
+export const unsetReadyButton = () => {
+  const msg = document.getElementById('readyMsg');
+  if (!msg) {
+    return;
+  }
+  msg.style.display = 'none';
+  input.isReady = false;
 }
 
 export const setReadyButton = (input: Input) => {

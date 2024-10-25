@@ -7,29 +7,34 @@ import { setActionList, setReadyButton } from './navigator';
 export let board: Board.Board = new Board.Board;
 export let input: Input = new Input();
 
-
 document.addEventListener('keydown', (event) => {
   if (input.isMyTurn === false) {
     return;
   }
-  if (event.key === 'm') {
-    input.mode = (input.mode == Mode.MOVE) ? Mode.ACTION : Mode.MOVE;
-    input.load();
-    return;
+
+  let mode: Mode;
+  if ('a' <= event.key  && event.key <= 'z') {
+    mode = Mode.MOVE;
+  } else {
+    mode = Mode.ACTION;
   }
 
   let direction: Direction;
   switch (event.key) {
     case 'w':
+    case 'W':
       direction = Direction.UP;
       break;
     case 's':
+    case 'S':
       direction = Direction.DOWN;
       break;
     case 'a':
+    case 'A':
       direction = Direction.LEFT;
       break;
     case 'd':
+    case 'D':
       direction = Direction.RIGHT;
       break;
     case 'q':
@@ -54,7 +59,7 @@ document.addEventListener('keydown', (event) => {
 
   let action: ActionData = new ActionData;
   action.direction = direction;
-  if (input.mode === Mode.ACTION) {
+  if (mode === Mode.ACTION) {
     if (!board.actionCurrentAgent(direction)) {
       return;
     }
@@ -70,6 +75,7 @@ document.addEventListener('keydown', (event) => {
   
   if (!board.nextCursor()) { // カーソルが最後であれば
     setReadyButton(input);
+    input.disableMyTurn();
   }
   board.createBoard();
 
@@ -113,8 +119,6 @@ const synchronizeAgent = () => {
   console.log(input.act);
   sendAction(input.act);
 
-  input.disableMyTurn();
-  
   board.setCursor(0);
   board.createBoard();
 }

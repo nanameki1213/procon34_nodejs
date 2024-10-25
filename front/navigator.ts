@@ -2,32 +2,6 @@ import { Direction, Mode } from './common'
 import { ActionData } from './common';
 import { Input } from './input';
 
-export const setMode = (mode: Mode) => {
-  const m = document.getElementById('mode');
-  
-  if (!m) {
-    console.error('mode is not found.');
-    return;
-  }
-
-  let current_mode = Mode.MOVE;
-  if (m.classList.contains('action')) {
-    current_mode = Mode.ACTION;
-  }
-
-  if (mode != current_mode) {
-    if (mode == Mode.MOVE) {
-      m.classList.remove('action');
-      m.classList.add('move');
-      m.innerText = 'MOVE';
-    } else {
-      m.classList.remove('move');
-      m.classList.add('action');
-      m.innerText = 'ACTION';
-    }
-  }
-}
-
 export const setActionList = (actionData: ActionData) => {
   const actionList = document.getElementById('actionList');
 

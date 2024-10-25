@@ -1,13 +1,13 @@
 import * as Board from './board';
 import { Input  } from './input';
 import { Mode, Direction, ActionData } from './common';
-import { fetchCSV, sendAction} from './api';
+import { fetchCSV, sendAction, notifyRoom} from './api';
 import { setActionList, setReadyButton } from './navigator';
 
 export let board: Board.Board;
 export let input: Input = new Input();
 
-board = new Board.Board();
+board = new Board.Board;
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'm') {
@@ -86,16 +86,23 @@ export const createBoard = async (boardKind: string) => {
 }
 
 // フロント側でボードを作成
-export async function fetch_board() {
+export async function newGame() {
   const board_type = <HTMLInputElement>document.getElementById('board-type-select');
   const board_size = <HTMLInputElement>document.getElementById('board-size-select');
 
   console.log('board_type: ' + board_type.value);
   console.log('board_size: ' + board_size.value);
 
+  const boardKind = board_type.value + board_size.value;
+
   // ボードの種類からボードを作成
-  board.loadBoard(board_type.value, true);
+  await board.loadBoard(boardKind, true);
+
+  board.createBoard();
+  console.log('draw board');
+  // ルーム作成をemitする
+  notifyRoom(boardKind);
 }
 
-(window as any).fetch_board = fetch_board;
+(window as any).newGame = newGame;
 (window as any).sendAction = sendAction;

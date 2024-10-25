@@ -22,10 +22,16 @@ export const sendAction = () => {
   return true;
 }
 
+export const notifyRoom = (boardKind: string) => {
+  console.log('room created.');
+  socket.emit('roomCreated', boardKind);
+}
+
 // 相手がルームを作成した
-socket.on('roomCreated', (roomId, boardKind) => {
-  const CSVData = createBoard(boardKind);
-  
+socket.on('roomCreated', async (roomId, boardKind) => {
+  console.log('room has created.');
+  await board.loadBoard(boardKind, false);
+  board.createBoard();
 });
 
 socket.on('ActionAgent', (ActionData) => {

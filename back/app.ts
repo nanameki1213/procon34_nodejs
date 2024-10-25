@@ -21,16 +21,16 @@ io.on('connection', (socket) => {
   console.log('socket.io connected.', socket.id);
 
   // ルームを作成
-  socket.on('createRoom', (boardKind) => {
+  socket.on('roomCreated', (boardKind) => {
     const roomId = nanoid();
     socket.join(roomId);
-    socket.emit('roomCreated', roomId, boardKind);
-    console.log('Room ${roomId} created by ${socket.id}');
+    socket.broadcast.emit('roomCreated', roomId, boardKind);
+    console.log(`Room ${roomId} created by ${socket.id}`);
   });
 
   socket.on('joinGame', (roomId) => {
     socket.join(roomId);
-    console.log('Player ${socket.id} joined room: ${roomId}');
+    console.log(`Player ${socket.id} joined room: ${roomId}`);
 
     // ルームにいる他のプレイヤーに通知
     socket.to(roomId).emit('playerJoined', 'Player ${socket.id} joined the game');

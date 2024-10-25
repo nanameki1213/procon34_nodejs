@@ -64,9 +64,11 @@ export class Board {
   currentAgentIndex: number = 0;
 
   async loadBoard(boardKind: string, is_agent1: boolean) {
-    
+    const path = '/api/field-datas/' + boardKind + '.csv';
     // APIサーバにボードを問い合わせ
-    const CSVData = await fetchCSV(boardKind);
+    const CSVData = await fetchCSV(path);
+
+    console.log(`GET ${path}`);
     
     // 取得したCSVファイルをパースし、オブジェクトに当てはめる
     const parse_csv = <Papa.ParseResult<string>>Papa.parse(CSVData, {

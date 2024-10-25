@@ -4,8 +4,10 @@ import { Mode, Direction, ActionData } from './common';
 import { fetchCSV, sendAction} from './api';
 import { setActionList, setReadyButton } from './navigator';
 
-let board: Board.Board;
+export let board: Board.Board;
 export let input: Input = new Input();
+
+board = new Board.Board();
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'm') {
@@ -71,6 +73,19 @@ document.addEventListener('keydown', (event) => {
 
 })
 
+export const createBoard = async (boardKind: string) => {
+
+  const path = '/api/field-datas/' + boardKind + '.csv';
+
+  console.log('fetch from ' + path);
+
+  // ボードをサーバから取得
+  const CSVData = await fetchCSV(path);
+
+  return CSVData;
+}
+
+// フロント側でボードを作成
 export async function fetch_board() {
   const board_type = <HTMLInputElement>document.getElementById('board-type-select');
   const board_size = <HTMLInputElement>document.getElementById('board-size-select');
@@ -78,16 +93,9 @@ export async function fetch_board() {
   console.log('board_type: ' + board_type.value);
   console.log('board_size: ' + board_size.value);
 
-  const path = '/api/field-datas/' + board_type.value + board_size.value + '.csv';
-
-  console.log('fetch from ' + path);
-
-  // ボードをサーバから取得
-  const CSVData = await fetchCSV(path);
-
-  // ボードを作成
-  board = new Board.Board(CSVData, true);
-  board.createBoard();
+  // ボードの種類からボードを作成
+  board.loadBoard(board_type.value, true);
 }
 
 (window as any).fetch_board = fetch_board;
+(window as any).sendAction = sendAction;

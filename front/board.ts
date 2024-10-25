@@ -1,5 +1,6 @@
 import * as Papa from 'papaparse'
 import { Mode, Direction, ActionData } from './common'
+import { fetchCSV } from './api';
 
 enum BIOMES {
   'NONE',
@@ -59,11 +60,16 @@ export class Board {
   width: number = 0;
   board: Cell[][] = [];
   agents: Agent[] = [];
-  currentAgent: Agent;
+  currentAgent: Agent = this.agents[0];
   currentAgentIndex: number = 0;
 
-  constructor(csv: string, is_agent1: boolean) {
-    const parse_csv = <Papa.ParseResult<string>>Papa.parse(csv, {
+  async loadBoard(boardKind: string, is_agent1: boolean) {
+    
+    // APIサーバにボードを問い合わせ
+    const CSVData = await fetchCSV(boardKind);
+    
+    // 取得したCSVファイルをパースし、オブジェクトに当てはめる
+    const parse_csv = <Papa.ParseResult<string>>Papa.parse(CSVData, {
       header: false,
     });
     const field_data = parse_csv.data;

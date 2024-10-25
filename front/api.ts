@@ -18,6 +18,7 @@ export const fetchCSV = async (path: string): Promise<string> => {
 }
 
 export const sendAction = () => {
+  console.log(input.act);
   socket.emit('AgentAction', input.act);
   return true;
 }

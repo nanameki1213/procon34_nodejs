@@ -60,6 +60,7 @@ export class Board {
   width: number = 0;
   board: Cell[][] = [];
   agents: Agent[] = [];
+  opponent: Agent[] = [];
   currentAgent: Agent = this.agents[0];
   currentAgentIndex: number = 0;
 
@@ -95,12 +96,16 @@ export class Board {
             this.board[i][j] = new Cell(j, i, 0, 1);
             if (is_agent1) {
               this.agents[this.agents.length] = new Agent(j, i);
+            } else {
+              this.opponent[this.opponent.length] = new Agent(j, i);
             }
             break;
           case 'b':
             this.board[i][j] = new Cell(j, i, 0, 2);
             if (!is_agent1) {
               this.agents[this.agents.length] = new Agent(j, i);
+            } else {
+              this.opponent[this.opponent.length] = new Agent(j, i);
             }
             break;
           default:
@@ -108,6 +113,8 @@ export class Board {
         }
       }
     }
+
+    console.log(this.agents);
 
     this.currentAgent = this.agents[this.currentAgentIndex++];
   }
@@ -267,13 +274,13 @@ export class Board {
           const agent = document.createElement('div');
           if (cell.agent_id == AGENTS.AGENT1) {
             agent.classList.add('agent1');
-            if (this.currentAgent.x == j && this.currentAgent.y == i) {
-              row.classList.add('cursorAgent');
-            }
           } else if (cell.agent_id == AGENTS.AGENT2) {
             agent.classList.add('agent2');
           } else {
             console.error('Illegal string value for agent_str.');
+          }
+          if (this.currentAgent.x == j && this.currentAgent.y == i) {
+            row.classList.add('cursorAgent');
           }
           row.appendChild(agent);
         }

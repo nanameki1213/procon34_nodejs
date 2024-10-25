@@ -326,11 +326,15 @@ export class Board {
           row.classList.add('field-castle');
           row.innerText = '🏰';
         }  else if (cell.wall_id == WALLS.WALL1) {
-          row.classList.add('field-wall');
-          row.innerHTML = "&#129521";
+          const wall_img = document.createElement('img');
+          wall_img.src = '/logo/red_wall.svg';
+          wall_img.classList.add('field-wall1');
+          row.appendChild(wall_img);
         } else if (cell.wall_id == WALLS.WALL2) {
-          row.classList.add('field-wall');
-          row.innerHTML = "&#129521";
+          const wall_img = document.createElement('img');
+          wall_img.src = '/logo/blue_wall.svg';
+          wall_img.classList.add('field-wall2');
+          row.appendChild(wall_img);
         }
         if(cell.agent_id != AGENTS.NONE) {
           const agent = document.createElement('div');

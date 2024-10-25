@@ -15,6 +15,7 @@ const io = new Server(server, {
 });
 
 app.use('/api/field-datas', express.static('../assets/field-datas'));
+app.use('/logo/', express.static('../assets/game-datas'));
 app.use(express.static('../front/'));
 
 io.on('connection', (socket) => {

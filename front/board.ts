@@ -147,7 +147,13 @@ export class Board {
   }
 
   // エージェント移動汎用API
-  moveAgent(agent: Agent, direction: Direction, is_agent1: boolean) {
+  moveAgent(agentIndex: number, direction: Direction, is_opponent: boolean) {
+    let agent: Agent;
+    if (!is_opponent) {
+      agent = this.agents[agentIndex];
+    } else {
+      agent = this.opponent[agentIndex];
+    }
     let move_x = agent.x;
     let move_y = agent.y;
 
@@ -173,14 +179,23 @@ export class Board {
       move_x++;
     }
 
-    if (!this.move_enable(move_x, move_y, is_agent1)) {
+    const target_agent = is_opponent ? !this.is_agent1: this.is_agent1;
+
+    if (!this.move_enable(move_x, move_y, target_agent)) {
       console.error('can\'t move to {' + move_x + ',' + move_y + '}');
       return false;
     }
 
     this.board[agent.y][agent.x].agent_id = AGENTS.NONE;
+    this.board[move_y][move_x].agent_id = target_agent ? AGENTS.AGENT1: AGENTS.AGENT2;
 
-    this.board[move_y][move_x].agent_id = is_agent1 ? AGENTS.AGENT1: AGENTS.AGENT2;
+    if (!is_opponent) {
+      this.agents[agentIndex].x = move_x;
+      this.agents[agentIndex].y = move_y;
+    } else {
+      this.opponent[agentIndex].x = move_x;
+      this.opponent[agentIndex].y = move_y;
+    }
 
     // カレントエージェントを動かした場合
     if (this.currentAgent === agent) {
@@ -192,7 +207,13 @@ export class Board {
   }
 
   // エージェント建築汎用API
-  actionAgent(agent: Agent, direction: Direction, is_agent1: boolean) {
+  actionAgent(agentIndex: number, direction: Direction, is_opponent: boolean) {
+    let agent: Agent;
+    if (!is_opponent) {
+      agent = this.agents[agentIndex];
+    } else {
+      agent = this.opponent[agentIndex];
+    }
     let action_x = agent.x;
     let action_y = agent.y;
 
@@ -209,19 +230,21 @@ export class Board {
       return false
     }
 
+    const target_agent = is_opponent ? !this.is_agent1 : this.is_agent1;
+
     if (this.board[action_y][action_x].wall_id == WALLS.NONE) {
-      return this.buildWall(action_x, action_y, is_agent1);
+      return this.buildWall(action_x, action_y, target_agent);
     } else {
       return this.removeWall(action_x, action_y);
     }
   }
 
   moveCurrentAgent(direction: Direction): boolean {
-    return this.moveAgent(this.currentAgent, direction, this.is_agent1);
+    return this.moveAgent(this.currentAgentIndex - 1, direction, false);
   }
 
   actionCurrentAgent(direction: Direction) {
-    return this.actionAgent(this.currentAgent, direction, this.is_agent1);
+    return this.actionAgent(this.currentAgentIndex - 1, direction, false);
   }
 
   buildWall(x: number, y: number, is_agent1: boolean): boolean {
@@ -269,14 +292,16 @@ export class Board {
 
   synchronizeOpponent(act: ActionData[]) {
     for (let i = 0; i < act.length; i++) {
+      console.log(this.is_agent1);
       if (act[i].mode === Mode.MOVE) {
-        this.moveAgent(this.opponent[i], act[i].direction, !this.is_agent1);
+        this.moveAgent(i, act[i].direction, true);
       } else if (act[i].mode === Mode.ACTION) {
-        this.actionAgent(this.opponent[i], act[i].direction, !this.is_agent1);
+        this.actionAgent(i, act[i].direction, true);
       }
     }
 
-  this.createBoard();
+    console.log(this.opponent);
+    this.createBoard();
   }
 
   createBoard() {

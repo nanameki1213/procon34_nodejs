@@ -39,6 +39,7 @@ socket.on('roomCreated', async (roomId, boardKind) => {
 
 socket.on('AgentAction', (ActionData) => {
   console.log('receive AgentAction');
+  console.log(ActionData);
   board.synchronizeOpponent(ActionData);
   input.enableMyTurn();
 });

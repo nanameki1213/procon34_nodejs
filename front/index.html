@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script src="./dist/index.js"></script>
+</head>
+<header style="border-bottom: 1px solid; display: flex; justify-content: space-around;">
+  <h1>Procon 2023 ボードゲーム</h1>
+  <div style="display: flex; justify-content: center;">
+    <div style="margin: auto 4px; display: flex; flex-flow: column; border: solid 1px; pad: 3px;">
+      <label for="board-type-select">ボードの種類を選択</label>
+      <select id="board-type-select">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+      </select>
+    </div>
+    <div style="margin: auto 4px; display: flex; flex-flow: column; border: solid 1px; padding: 3px;">
+      <label for="board-size-select">ボードの大きさを選択（正方形の一辺）</label>
+      <select id="board-size-select">
+        <option>11</option>
+        <option>13</option>
+        <option>15</option>
+        <option>17</option>
+        <option>21</option>
+        <option>25</option>
+      </select>
+    </div>
+    <button style="background-color: pink; margin: auto 4px;" onclick="fetch_board()">新しいゲームの開始</button>
+    <button style="background-color: greenyellow; margin: auto 4px;">Help</button>
+  </div>
+</header>
+<style>
+  .table-cell {
+    width: 33.33%;
+    height: 40px;
+    border: 1px solid #000;
+  }
+  .field-pond {
+    background-color: aqua;
+  }
+  .agent1 {
+    border-radius: 100%;
+    background-color: red;
+    height: 80%;
+    width: 80%;
+    margin: auto;
+    animation: none;
+  }
+  .agent2 {
+    border-radius: 100%;
+    background-color: blue;
+    height: 80%;
+    width: 80%;
+    margin: auto;
+    animation: none;
+  }
+  .cursorAgent {
+    animation: blinkAndWobble 2s infinite;
+    background-color: rgb(255, 255, 159);
+  }
+  @keyframes blinkAndWobble {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+  .field-castle {
+    font-size: large;
+    text-align: center;
+  }
+  .field-wall {
+    font-size: large;
+    text-align: center;
+  }
+  .navigator {
+    border: solid 1px;
+    width: 20%;
+    margin: 2%;
+  }
+  #mode {
+    margin: 20px;
+    height: auto;
+    width: 75%;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+  }
+  .action {
+    background-color: red;
+  }
+  .move {
+    background-color: blue;
+  }
+  #actionList {
+    margin: auto;
+    color: white;
+    width: 20px;
+    list-style-type: none;
+  }
+  .actionlist-move {
+    background-color: blue;
+    border-radius: 20px;
+    text-align: center;
+  }
+  .actionlist-action {
+    background-color: red;
+    border-radius: 20px;
+    text-align: center;
+  }
+  .actionlist-up {
+    transform: rotate(-90deg);
+  }
+  .actionlist-down {
+    transform: rotate(90deg);
+  }
+  .actionlist-left {
+    transform: rotate(180deg);
+  }
+  .actionlist-right {
+    transform: rotate(0deg);
+  }
+  .actionlist-upleft {
+    transform: rotate(-135deg);
+  }
+  .actionlist-upright {
+    transform: rotate(-45deg);
+  }
+  .actionlist-downleft {
+    transform: rotate(135deg);
+  }
+  .actionlist-downright {
+    transform: rotate(45deg);
+  }
+  #readyMsg {
+    text-align: center;
+    background-color: darkorange;
+    border-radius: 20px;
+    display: none;
+  }
+</style>
+<body>
+  <div style="display: flex;">
+    <div class="navigator">
+      <div id="mode" class="move">
+        MOVE
+      </div>
+      <ul id="actionList"></ul>
+      <button id="readyMsg" onclick="sendAction">
+        送信
+      </button>
+    </div>
+    <div style="width: 60%; padding: 2%; display: flex; justify-content: center;">
+      <table id="board" style="width: 100%; border-spacing: 5px; table-layout: fixed;">
+      </table>
+    </div>
+    <div style="width: 20%; border: solid 1px; margin: 2%;">
+    </div>
+  </div>
+</body>
+</html>

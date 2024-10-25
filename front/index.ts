@@ -4,10 +4,8 @@ import { Mode, Direction, ActionData } from './common';
 import { fetchCSV, sendAction, notifyRoom} from './api';
 import { setActionList, setReadyButton } from './navigator';
 
-export let board: Board.Board;
+export let board: Board.Board = new Board.Board;
 export let input: Input = new Input();
-
-board = new Board.Board;
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'm') {

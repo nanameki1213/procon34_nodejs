@@ -30,6 +30,10 @@ export const notifyRoom = (boardKind: string) => {
 // 相手がルームを作成した
 socket.on('roomCreated', async (roomId, boardKind) => {
   console.log('room has created.');
+  if (!confirm('対戦を申し込まれました。ゲームを開始しますか？')) {
+    alert('対戦申し込みを拒否しました。');
+    
+  }
   await board.loadBoard(boardKind, false);
   board.createBoard();
 });

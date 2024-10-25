@@ -148,11 +148,13 @@
         MOVE
       </div>
       <ul id="actionList"></ul>
-      <button id="readyMsg" onclick="sendAction">
+      <button id="readyMsg" onclick="synchronizeAgent()">
         送信
       </button>
     </div>
-    <div style="width: 60%; padding: 2%; display: flex; justify-content: center;">
+    <div style="width: 60%; padding: 2%; display: flex; justify-content: center; flex-flow: column; text-align: center;">
+      <h3 id="myTurn" style="display: none;">あなたのターンです</h3>
+      <h3 id="opponentTurn" style="display: none;">相手のターンです</h3>
       <table id="board" style="width: 100%; border-spacing: 5px; table-layout: fixed;">
       </table>
     </div>

@@ -27,8 +27,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('roomCreated', roomId, boardKind);
     console.log(`Room ${roomId} created by ${socket.id}`);
   });
-  
+
   socket.on('AgentAction', (actionData) => {
+    console.log(`AgentAction is send by ${socket.id}`);
     socket.broadcast.emit('AgentAction', actionData);
   });
 

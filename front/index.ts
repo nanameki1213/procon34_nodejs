@@ -7,7 +7,11 @@ import { setActionList, setReadyButton } from './navigator';
 export let board: Board.Board = new Board.Board;
 export let input: Input = new Input();
 
+
 document.addEventListener('keydown', (event) => {
+  if (input.isMyTurn === false) {
+    return;
+  }
   if (event.key === 'm') {
     input.mode = (input.mode == Mode.MOVE) ? Mode.ACTION : Mode.MOVE;
     input.load();
@@ -98,9 +102,22 @@ export async function newGame() {
 
   board.createBoard();
   console.log('draw board');
+
+  input.enableMyTurn();
+
   // ルーム作成をemitする
   notifyRoom(boardKind);
 }
 
+const synchronizeAgent = () => {
+  console.log(input.act);
+  sendAction(input.act);
+
+  input.disableMyTurn();
+  
+  board.setCursor(0);
+  board.createBoard();
+}
+
 (window as any).newGame = newGame;
-(window as any).sendAction = sendAction;
+(window as any).synchronizeAgent = synchronizeAgent;

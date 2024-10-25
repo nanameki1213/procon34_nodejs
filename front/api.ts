@@ -1,7 +1,6 @@
 import { io } from 'socket.io-client'
-import { createBoard, input } from './index'
-import { board } from './index'
-import { Board } from './board';
+import { board, input } from './index'
+import { ActionData } from './common';
 
 const socket = io('http://localhost:3000');
 
@@ -17,9 +16,8 @@ export const fetchCSV = async (path: string): Promise<string> => {
   return CSVData;
 }
 
-export const sendAction = () => {
-  console.log(input.act);
-  socket.emit('AgentAction', input.act);
+export const sendAction = (act: ActionData[]) => {
+  socket.emit('AgentAction', act);
   return true;
 }
 
@@ -33,12 +31,14 @@ socket.on('roomCreated', async (roomId, boardKind) => {
   console.log('room has created.');
   if (!confirm('対戦を申し込まれました。ゲームを開始しますか？')) {
     alert('対戦申し込みを拒否しました。');
-    
   }
   await board.loadBoard(boardKind, false);
   board.createBoard();
+  input.disableMyTurn();
 });
 
-socket.on('ActionAgent', (ActionData) => {
-  
+socket.on('AgentAction', (ActionData) => {
+  console.log('receive AgentAction');
+  board.synchronizeOpponent(ActionData);
+  input.enableMyTurn();
 });

@@ -119,19 +119,21 @@ export class Board {
     this.currentAgent = this.agents[this.currentAgentIndex++];
   }
 
-  move_enable(x: number, y: number) {
+  move_enable(x: number, y: number, is_agent1: boolean) {
+    const target_wall = (is_agent1) ? WALLS.WALL2 : WALLS.WALL1;
     if (x < 0 || x > this.width - 1 || y < 0 || y > this.height - 1) {
       return false;
     }
-    if (this.board[y][x].agent_id != AGENTS.NONE || this.board[y][x].wall_id == WALLS.WALL2 || 
+    if (this.board[y][x].agent_id != AGENTS.NONE || this.board[y][x].wall_id == target_wall || 
         this.board[y][x].biome_id == BIOMES.POND) {
       return false;
     }
     return true;
   }
 
-  build_enable(x: number, y: number) {
-    if (x < 0 || x > this.width - 1 || y < 0 || y > this.height - 1) {
+  build_enable(x: number, y: number, is_agent1: boolean) {
+    const target_agent = (is_agent1) ? AGENTS.AGENT2: AGENTS.AGENT1;
+    if (x < 0 || x > this.width - 1 || y < 0 || y > this.height - 1 || this.board[y][x].agent_id == target_agent) {
       return false;
     }
     if (this.board[y][x].wall_id != WALLS.NONE || this.board[y][x].biome_id == BIOMES.CASL ||
@@ -139,6 +141,56 @@ export class Board {
       return false;
     }
     return true;
+  }
+
+  // エージェント操作汎用API
+  moveAgent(agent: Agent, act: ActionData, is_agent1: boolean) {
+    let move_x = agent.x;
+    let move_y = agent.y;
+
+    const direction = act.direction;
+    if (direction == Direction.UP) {
+      move_y--;
+    } else if (direction == Direction.DOWN) {
+      move_y++;
+    } else if (direction == Direction.RIGHT) {
+      move_x++;
+    } else if (direction == Direction.LEFT) {
+      move_x--;
+    } else if (direction == Direction.UpLEFT) {
+      move_y--;
+      move_x--;
+    } else if (direction == Direction.UpRIGHT) {
+      move_y--;
+      move_x++;
+    } else if (direction == Direction.DownLEFT) {
+      move_y++;
+      move_x--;
+    } else if (direction == Direction.DownRIGHT) {
+      move_y++;
+      move_x++;
+    }
+
+    if (!this.move_enable(move_x, move_y, is_agent1)) {
+      console.error('can\'t move to {' + move_x + ',' + move_y + '}');
+      return false;
+    }
+
+    this.board[agent.y][agent.x].agent_id = AGENTS.NONE;
+
+    this.board[move_y][move_x].agent_id = is_agent1 ? AGENTS.AGENT1: AGENTS.AGENT2;
+
+    // カレントエージェントを動かした場合
+    if (this.currentAgent === agent) {
+      this.currentAgent.x = move_x;
+      this.currentAgent.y = move_y;
+    }
+
+    return true;
+  }
+
+  actionAgent(agent: Agent, act: ActionData, is_agent1: boolean) {
+
   }
 
   moveCurrentAgent(direction: Direction): boolean {
@@ -242,6 +294,69 @@ export class Board {
       if (!this.moveCurrentAgent(act.direction)) {
         return;
       }
+    }
+  }
+
+  synchronizeOpponent(act: ActionData[]) {
+    for (let i = 0; i < this.opponent.length; i++) {
+      let move_x = this.opponent[i].x;
+      let move_y = this.opponent[i].y;
+
+      const direction = act[i].direction;
+
+      if (direction == Direction.UP) {
+        move_y--;
+      } else if (direction == Direction.DOWN) {
+        move_y++;
+      } else if (direction == Direction.RIGHT) {
+        move_x++;
+      } else if (direction == Direction.LEFT) {
+        move_x--;
+      } else if (direction == Direction.UpLEFT) {
+        move_y--;
+        move_x--;
+      } else if (direction == Direction.UpRIGHT) {
+        move_y--;
+        move_x++;
+      } else if (direction == Direction.DownLEFT) {
+        move_y++;
+        move_x--;
+      } else if (direction == Direction.DownRIGHT) {
+        move_y++;
+        move_x++;
+      }
+
+      if (!this.move_enable(move_x, move_y)) {
+        console.error('can\'t move to {' + move_x + ',' + move_y + '}');
+        return false;
+      }
+
+      this.board[this.currentAgent.y][this.currentAgent.x].agent_id = AGENTS.NONE;
+
+      this.board[move_y][move_x].agent_id = AGENTS.AGENT1;
+
+      this.currentAgent.x = move_x;
+      this.currentAgent.y = move_y;
+    }
+    let target_x = this.opponent.x;
+    let target_y = this.opponent.y;
+
+    if (direction == Direction.UP) {
+      target_y--;
+    } else if (direction == Direction.DOWN) {
+      target_y++;
+    } else if (direction == Direction.RIGHT) {
+      target_x++;
+    } else if (direction == Direction.LEFT) {
+      target_x--;
+    } else {
+      console.error('direction is illegal.');
+    }
+
+    if (this.board[target_y][target_x].wall_id == WALLS.NONE) {
+      return this.buildWall(target_x, target_y);
+    } else {
+      return this.removeWall(target_x, target_y);
     }
   }
 
